@@ -304,72 +304,69 @@
       </div>
     </div>
   </footer>
-  <script
- // Replace this with your actual SheetDB API URL
-const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/zdcp50dxob9u7';
+ <script>
+  // 1. Properly define the form variable
+  const orderForm = document.getElementById('orderForm');
+  const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/zdcp50dxob9u7';
 
-orderForm.addEventListener('submit', async (e) => {
+  orderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // 1. Get form values
+    // Get form values
     const name = orderForm.querySelector('input[placeholder="Your Full Name"]').value;
     const phone = orderForm.querySelector('input[placeholder="Phone Number"]').value;
     const size = orderForm.querySelector('select').value;
-    const date = new Date().toLocaleString(); // Current time in Kericho
+    const date = new Date().toLocaleString(); 
 
     if (!name || !phone || size === "Select Size") {
-        alert("Please fill in all details.");
-        return;
+      alert("Please fill in all details.");
+      return;
     }
 
-    // 2. Change button text to show "Processing"
     const submitBtn = orderForm.querySelector('button');
     const originalText = submitBtn.innerText;
     submitBtn.innerText = "Processing...";
     submitBtn.disabled = true;
 
     try {
-        // 3. Send data to Google Sheets
-        const response = await fetch(SHEETDB_API_URL, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                data: [
-                    {
-                        name: name,
-                        phone: phone,
-                        size: size,
-                        date: date,
-                        status: 'Pending'
-                    }
-                ]
-            })
-        });
+      const response = await fetch(SHEETDB_API_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          data: [
+            {
+              name: name,
+              phone: phone,
+              size: size,
+              date: date,
+              status: 'Pending'
+            }
+          ]
+        })
+      });
 
-        if (response.ok) {
-            // 4. Create WhatsApp Message
-            const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
-            
-            // 5. Open WhatsApp
-            window.open(`https://wa.me/254790508310?text=${message}`, '_blank');
-            
-            // Clear form
-            orderForm.reset();
-        }
+      if (response.ok) {
+        const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
+        window.open(`https://wa.me/254790508310?text=${message}`, '_blank');
+        orderForm.reset();
+      } else {
+        throw new Error("SheetDB connection failed");
+      }
     } catch (error) {
-        alert("Something went wrong. Please try again or call us directly.");
-        console.error(error);
+      alert("Something went wrong. Please check your internet or call us directly.");
+      console.error(error);
     } finally {
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
+      submitBtn.innerText = originalText;
+      submitBtn.disabled = false;
     }
-});
+  });
 </script>
 </body>
 
 </body>
+
 
 </html>
