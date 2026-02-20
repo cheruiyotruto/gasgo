@@ -196,7 +196,7 @@
           </div>
         </div>
 
-        <form class="bg-white p-8 rounded-[2rem] shadow-xl space-y-4">
+        <form id="orderForm" class="bg-white p-8 rounded-[2rem] shadow-xl space-y-4">
           <input class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Your Full Name">
           <input class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Phone Number">
           <select class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 focus:ring-2 focus:ring-orange-500 outline-none appearance-none">
@@ -205,7 +205,7 @@
             <option>13kg Cylinder</option>
             <option>50kg Cylinder</option>
           </select>
-          <button class="w-full bg-slate-900 text-white py-4 rounded-xl font-black hover:bg-orange-600 transition-all shadow-lg active:scale-95">Dispatch Now</button>
+          <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-black hover:bg-orange-600 transition-all shadow-lg active:scale-95">Dispatch Now</button>
           <p class="text-center text-[10px] text-slate-400 uppercase tracking-widest font-bold pt-2">Payment on Delivery Only</p>
         </form>
       </div>
@@ -304,69 +304,65 @@
       </div>
     </div>
   </footer>
- <script>
-  // 1. Properly define the form variable
-  const orderForm = document.getElementById('orderForm');
-  const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/zdcp50dxob9u7';
 
-  orderForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  <script>
+    const orderForm = document.getElementById('orderForm');
+    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/zdcp50dxob9u7';
 
-    // Get form values
-    const name = orderForm.querySelector('input[placeholder="Your Full Name"]').value;
-    const phone = orderForm.querySelector('input[placeholder="Phone Number"]').value;
-    const size = orderForm.querySelector('select').value;
-    const date = new Date().toLocaleString(); 
+    orderForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    if (!name || !phone || size === "Select Size") {
-      alert("Please fill in all details.");
-      return;
-    }
+      // Get form values using the orderForm reference
+      const name = orderForm.querySelector('input[placeholder="Your Full Name"]').value;
+      const phone = orderForm.querySelector('input[placeholder="Phone Number"]').value;
+      const size = orderForm.querySelector('select').value;
+      const date = new Date().toLocaleString(); 
 
-    const submitBtn = orderForm.querySelector('button');
-    const originalText = submitBtn.innerText;
-    submitBtn.innerText = "Processing...";
-    submitBtn.disabled = true;
-
-    try {
-      const response = await fetch(SHEETDB_API_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          data: [
-            {
-              name: name,
-              phone: phone,
-              size: size,
-              date: date,
-              status: 'Pending'
-            }
-          ]
-        })
-      });
-
-      if (response.ok) {
-        const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
-        window.open(`https://wa.me/254790508310?text=${message}`, '_blank');
-        orderForm.reset();
-      } else {
-        throw new Error("SheetDB connection failed");
+      if (!name || !phone || size === "Select Size") {
+        alert("Please fill in all details.");
+        return;
       }
-    } catch (error) {
-      alert("Something went wrong. Please check your internet or call us directly.");
-      console.error(error);
-    } finally {
-      submitBtn.innerText = originalText;
-      submitBtn.disabled = false;
-    }
-  });
-</script>
+
+      const submitBtn = orderForm.querySelector('button');
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = "Processing...";
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(SHEETDB_API_URL, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: [
+              {
+                name: name,
+                phone: phone,
+                size: size,
+                date: date,
+                status: 'Pending'
+              }
+            ]
+          })
+        });
+
+        if (response.ok) {
+          const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
+          window.open(`https://wa.me/254790508310?text=${message}`, '_blank');
+          orderForm.reset();
+        } else {
+          throw new Error("SheetDB connection failed");
+        }
+      } catch (error) {
+        alert("Something went wrong. Please check your internet or call us directly.");
+        console.error(error);
+      } finally {
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
-
-</body>
-
-
 </html>
