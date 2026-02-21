@@ -393,6 +393,9 @@
         });
 
         if (response.ok) {
+          // NOTIFICATION ADDED HERE
+          alert('Thank you for ordering with Segisonik Gas Point — your trusted LPG gas distributor across Kericho.\n\nYour order has been successfully received and is now being processed for dispatch.\nWe appreciate your trust in us. Your gas will be delivered to your doorstep within a few minutes.\nThank you for choosing Segisonik Gas Point.');
+          
           const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Brand:* ${finalBrand}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
           window.open(`https://wa.me/254790508310?text=${message}`, '_blank');
           orderForm.reset();
