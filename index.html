@@ -197,9 +197,32 @@
         </div>
 
         <form id="orderForm" class="bg-white p-8 rounded-[2rem] shadow-xl space-y-4">
-          <input class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Your Full Name">
-          <input class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Phone Number">
-          <select class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 focus:ring-2 focus:ring-orange-500 outline-none appearance-none">
+          <input id="userName" class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Your Full Name">
+          <input id="userPhone" class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Phone Number">
+          
+          <select id="gasBrand" class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 focus:ring-2 focus:ring-orange-500 outline-none appearance-none" onchange="toggleOtherBrand()">
+            <option>Select Gas Brand</option>
+            <option>Total</option>
+            <option>Kgas</option>
+            <option>Lake Gas</option>
+            <option>Taifa Gas</option>
+            <option>Mengas</option>
+            <option>Hashi</option>
+            <option>Jamii</option>
+            <option>Pro Gas</option>
+            <option>Afrigas</option>
+            <option>Hass</option>
+            <option>Ola</option>
+            <option>Top Gas</option>
+            <option>City Gas</option>
+            <option>Future Gas</option>
+            <option>G Gas</option>
+            <option value="Other">Others (Type below)</option>
+          </select>
+
+          <input id="otherBrandInput" class="hidden w-full bg-slate-100 border-2 border-orange-200 rounded-xl p-4 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Enter Brand Name">
+
+          <select id="gasSize" class="w-full bg-slate-50 border-none rounded-xl p-4 text-slate-900 focus:ring-2 focus:ring-orange-500 outline-none appearance-none">
             <option>Select Size</option>
             <option>6kg Cylinder</option>
             <option>13kg Cylinder</option>
@@ -309,16 +332,36 @@
     const orderForm = document.getElementById('orderForm');
     const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/zdcp50dxob9u7';
 
+    // Show/Hide "Other" Brand input field
+    function toggleOtherBrand() {
+      const brandSelect = document.getElementById('gasBrand');
+      const otherInput = document.getElementById('otherBrandInput');
+      if (brandSelect.value === 'Other') {
+        otherInput.classList.remove('hidden');
+        otherInput.required = true;
+      } else {
+        otherInput.classList.add('hidden');
+        otherInput.required = false;
+      }
+    }
+
     orderForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Get form values using the orderForm reference
-      const name = orderForm.querySelector('input[placeholder="Your Full Name"]').value;
-      const phone = orderForm.querySelector('input[placeholder="Phone Number"]').value;
-      const size = orderForm.querySelector('select').value;
+      const name = document.getElementById('userName').value;
+      const phone = document.getElementById('userPhone').value;
+      const size = document.getElementById('gasSize').value;
+      const brandSelect = document.getElementById('gasBrand').value;
+      const otherBrand = document.getElementById('otherBrandInput').value;
       const date = new Date().toLocaleString(); 
 
-      if (!name || !phone || size === "Select Size") {
+      // Logic to pick the correct brand name
+      let finalBrand = brandSelect;
+      if (brandSelect === "Other") {
+        finalBrand = otherBrand;
+      }
+
+      if (!name || !phone || size === "Select Size" || finalBrand === "Select Gas Brand" || (brandSelect === "Other" && !otherBrand)) {
         alert("Please fill in all details.");
         return;
       }
@@ -340,6 +383,7 @@
               {
                 name: name,
                 phone: phone,
+                brand: finalBrand,
                 size: size,
                 date: date,
                 status: 'Pending'
@@ -349,9 +393,10 @@
         });
 
         if (response.ok) {
-          const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
+          const message = `Hello Segisonik Gas!%0A*New Order Received*%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Brand:* ${finalBrand}%0A*Size:* ${size}%0A%0APlease confirm delivery.`;
           window.open(`https://wa.me/254790508310?text=${message}`, '_blank');
           orderForm.reset();
+          document.getElementById('otherBrandInput').classList.add('hidden');
         } else {
           throw new Error("SheetDB connection failed");
         }
